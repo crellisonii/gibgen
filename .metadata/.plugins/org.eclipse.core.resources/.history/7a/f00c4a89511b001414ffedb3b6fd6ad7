@@ -1,0 +1,136 @@
+package gibgen;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Random;
+
+
+public class Gibgen{
+	
+	
+	
+	
+	String outputGibberish;
+	Random random;
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args){
+		if(args.length == 1){
+			if(args[0].contains(".txt")){
+				System.out.println("input is a file");
+				File file = new File(args[0]);
+				new Gibgen(file);
+			}
+			else{
+				String input = args[0];
+				new Gibgen(input);
+			}
+		}
+		else if(args.length > 1){
+			new Gibgen(args);
+		}
+		else{
+			System.out.println("No arguments!!");
+		}
+	}
+	
+	
+	
+	
+	public Gibgen(String string){
+		outputGibberish = "";
+		random = new Random();
+		System.out.println("String " + string + " received");
+		char[] charArray= string.toCharArray();
+		for(Character character: charArray){
+			if(Character.isLetter(character)){
+				System.out.println(character);
+			}
+			else if(Character.isDigit(character)){
+				System.out.println(character);
+			}
+		}
+	}
+	
+	
+	
+	
+	public Gibgen(File file){
+		outputGibberish = "";
+		random = new Random();
+		System.out.println("File " + file + " received");
+	}
+	
+	
+	
+	
+	public Gibgen(String[] stringArray){
+		outputGibberish = "";
+		random = new Random();
+		System.out.println("String[] received");
+		char[] charArray;
+		for(String string:stringArray){
+			charArray = string.toCharArray();
+			wordToScramble(charArray);
+		}
+		printGibberish();
+	}
+	
+	
+	
+	
+	private void wordToScramble(char[] word){
+		int index = 0;
+		String gibWord = "";
+		ArrayList<Character> lettersToScramble = new ArrayList<Character>();
+		if(!Character.isLetter(word[index]) && !Character.isDigit(word[index])){
+			gibWord = gibWord + word[index];
+			index = index + 1;
+			gibWord = gibWord + word[index];
+		}
+		else{
+			gibWord = gibWord + word[index];
+		}
+		while(index < word.length -1){
+			lettersToScramble.add(word[index]);
+			index = index + 1;
+		}
+		gibWord = gibWord + scrambleLetters(lettersToScramble);
+		gibWord = gibWord + word[index];
+		updateOutputGibberish(gibWord);
+	}
+	
+	
+	
+	
+	private String scrambleLetters(ArrayList<Character> letters){
+		ArrayList<Character> scrambledLetters = new ArrayList<Character>();
+		String string = "";
+		while(letters.size() != 0){
+			int index = random.nextInt(letters.size());
+			scrambledLetters.add(letters.get(index));
+			letters.remove(index);
+		}
+		for(Character character: scrambledLetters){
+			string = string + character;
+		}
+		return string;
+	}
+	
+	
+	
+	
+	private void updateOutputGibberish(String scrambledWord){
+		outputGibberish = outputGibberish + scrambledWord + " ";
+	}
+	
+	
+	
+	
+	private void printGibberish(){
+		System.out.println(outputGibberish);
+	}
+
+}

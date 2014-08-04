@@ -1,0 +1,272 @@
+package gibgen;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+
+
+public class Gibgen{
+	
+	
+	
+	
+	String outputGibberish;
+	Random random;
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args){
+		if(args.length == 1){
+			if(args[0].contains(".txt")){
+				File file = new File(args[0]);
+				new Gibgen(file);
+			}
+			else{
+				String input = args[0];
+				new Gibgen(input);
+			}
+		}
+		else if(args.length > 1){
+			new Gibgen(args);
+		}
+		else{
+			System.out.println("No arguments!!");
+		}
+	}
+	
+	
+	
+	
+	public Gibgen(String string){
+		outputGibberish = "";
+		random = new Random();
+		String word = "";
+		int i = 0;
+		while(i < string.length()){
+			Character letter = string.charAt(i);
+			if(string.codePointAt(i) == 32){
+				scramble(word);
+				word = "";
+				i++;
+			}
+			else{
+				word = word + letter;
+				i++;
+			}
+		}
+		scramble(word);
+		printGibberish();
+	}
+	
+	
+	
+	
+	public Gibgen(File file){
+		outputGibberish = "";
+		random = new Random();
+		try {
+			Scanner fileReader = new Scanner(file);
+			while(fileReader.hasNext()){
+				String word = fileReader.next();
+				System.out.println(word);
+				scramble(word);
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found.");
+		}
+		printGibberish();
+	}
+	
+	
+	
+	
+	public Gibgen(String[] stringArray){
+		outputGibberish = "";
+		random = new Random();
+		for(String string:stringArray){
+			scramble(string);
+		}
+		printGibberish();
+	}
+	
+	
+	
+	
+	private void scramble(String word){
+		if(word.length() == 1 || word.length() == 2){
+			updateOutputGibberish(word.toString());
+		}
+		else if(word.equals(word.toUpperCase())){
+			updateOutputGibberish(word);
+		}
+		else{
+			wordToScramble(word.toCharArray());
+		}
+	}
+	
+	
+	
+	
+	private void wordToScramble(char[] word){
+		ArrayList<Character> lettersToScramble = new ArrayList<Character>();
+		String gibWord = firstLetter(word);
+		String lastLetters = lastLetter(word);
+		int index = gibWord.length();
+		while(index < (word.length - lastLetters.length())){
+			lettersToScramble.add(word[index]);
+			index++;
+		}
+		if(containsPunctuation(lettersToScramble)){
+			gibWord = gibWord + scrambleWithPunctuation(lettersToScramble);
+			gibWord = gibWord + lastLetters;
+			updateOutputGibberish(gibWord);
+			System.out.println(gibWord);
+		}
+		else{
+			gibWord = gibWord + scrambleLetters(lettersToScramble);
+			gibWord = gibWord + lastLetters;
+			updateOutputGibberish(gibWord);
+			System.out.println(gibWord);
+		}
+	}
+	
+	
+	
+	
+	private boolean isPunctuation(Character letter){
+		boolean isPunctuation = false;
+		if(Character.isLetter(letter) || Character.isDigit(letter)){
+			isPunctuation = true;
+		}
+		return isPunctuation;
+	}
+	
+	
+	
+	
+	private boolean containsPunctuation(ArrayList<Character> word){
+		boolean hasPunctuation = false;
+		for(Character letter: word){
+			if(isPunctuation(letter)){
+				hasPunctuation = true;
+			}
+		}
+		return hasPunctuation;
+	}
+	
+	
+	
+	
+	private String scrambleWithPunctuation(ArrayList<Character> word){
+		String scrambled = "";
+		int punctuationIndex = 0;
+		Character punctuation = ' ';
+		ArrayList<Character> characterArray = new ArrayList<Character>();
+		for(int i = 0; i < word.size(); i++){
+			Character character = word.get(i);
+			if(!isPunctuation(character)){
+				characterArray.add(character);
+			}
+			else{
+				punctuationIndex = i;
+				punctuation = character;
+			}
+		}
+		String temp = scrambleLetters(characterArray);
+		scrambled = recombineWithPunctuation(temp, punctuationIndex, punctuation);
+		return scrambled;
+	}
+	
+	
+	
+	
+	private String recombineWithPunctuation(String string, int index, Character punctuation){
+		ArrayList<Character> characterList = new ArrayList<Character>();
+		for(int i = 0; i < string.length(); i++){
+			characterList.add(string.charAt(i));
+		}
+		characterList.add(index, punctuation);
+		String word = "";
+		for(int i = 0; i < characterList.size(); i++){
+			word = word + characterList.get(i);
+		}
+		return word;
+	}
+	
+	
+	
+	
+	private String firstLetter(char[] word){
+		String firstLetter = "";
+		int i = 0;
+		while(i < word.length){
+			if(!Character.isLetter(word[i]) && !Character.isDigit(word[i])){
+				firstLetter = firstLetter + word[i];
+				i++;
+			}
+			else if(Character.isDigit(word[i])){
+				firstLetter = firstLetter + word[i];
+				i++;
+			}
+			else{
+				firstLetter = firstLetter + word[i];
+				i = word.length;
+			}
+		}
+		return firstLetter;
+	}
+	
+	
+	
+	
+	private String lastLetter(char[] word){
+		String lastLetter = "";
+		int i = word.length -1;
+		while(i >= 0){
+			if(!Character.isLetter(word[i]) && !Character.isDigit(word[i])){
+				lastLetter = word[i] + lastLetter;
+				i--;
+			}
+			else{
+				lastLetter = word[i] + lastLetter;
+				i = -1;
+			}
+		}
+		return lastLetter;
+	}
+	
+	
+	
+	
+	private String scrambleLetters(ArrayList<Character> letters){
+		ArrayList<Character> scrambledLetters = new ArrayList<Character>();
+		String string = "";
+		while(letters.size() != 0){
+			int index = random.nextInt(letters.size());
+			scrambledLetters.add(letters.get(index));
+			letters.remove(index);
+		}
+		for(Character character: scrambledLetters){
+			string = string + character;
+		}
+		return string;
+	}
+	
+	
+	
+	
+	private void updateOutputGibberish(String scrambledWord){
+		outputGibberish = outputGibberish + scrambledWord + " ";
+	}
+	
+	
+	
+	
+	private void printGibberish(){
+		System.out.println(outputGibberish);
+	}
+
+}

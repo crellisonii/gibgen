@@ -1,0 +1,89 @@
+package gibgen;
+
+import java.io.File;
+
+
+public class Gibgen{
+	
+	
+	
+	
+	String outputGibberish = "";
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args){
+		if(args.length == 1){
+			if(args[0].contains(".txt")){
+				System.out.println("input is a file");
+				File file = new File(args[0]);
+				new Gibgen(file);
+			}
+			else{
+				String input = args[0];
+				new Gibgen(input);
+			}
+		}
+		else if(args.length > 1){
+			new Gibgen(args);
+		}
+		else{
+			System.out.println("No arguments!!");
+		}
+	}
+	
+	
+	
+	
+	public Gibgen(String string){
+		System.out.println("String " + string + " received");
+		char[] charArray= string.toCharArray();
+		for(Character character: charArray){
+			if(Character.isLetter(character)){
+				System.out.println(character);
+			}
+		}
+	}
+	
+	
+	
+	
+	public Gibgen(File file){
+		System.out.println("File " + file + " received");
+	}
+	
+	
+	
+	
+	public Gibgen(String[] stringArray){
+		System.out.println("String[] received");
+		for(String string:stringArray){
+			System.out.println(string);
+		}
+	}
+	
+	
+	
+	
+	private void scramble(char[] ){
+		
+	}
+	
+	
+	
+	
+	private boolean checkForPunctuation(){
+		boolean punctuation = false;
+		return punctuation;
+	}
+	
+	
+	
+	
+	private boolean isNumber(){
+		boolean number = false;
+		return number;
+	}
+
+}
